@@ -56,7 +56,7 @@ const PostLoginTable = (sequelize, DataTypes) => {
 			comment: 'proper id',
 		},
 		name: {
-			type: DataTypes.STRING(20),
+			type: DataTypes.STRING(40),
 			allowNull: false,
 			comment: 'name',
 		},
