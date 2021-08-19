@@ -1,7 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const Sequelize = require('sequelize');
+const Op = require('sequelize');
+
 var db_config = require('./db_config.json');
+
 
 const sequelize = new Sequelize('log', 'root', db_config.password, {
 	host: '127.0.0.1',
@@ -17,7 +20,7 @@ const sequelize = new Sequelize('log', 'root', db_config.password, {
 		acquire: 30000,
 		idle: 5000,
 	},
-});
+}); //sequelize 정의
 
 // UserLogin Table 생성 함수 정의
 const UserLoginTable = (sequelize, DataTypes) => {
@@ -29,7 +32,7 @@ const UserLoginTable = (sequelize, DataTypes) => {
 			comment: 'proper id',
 		},
 		name: {
-			type: DataTypes.STRING(20),
+			type: DataTypes.STRING(40),
 			allowNull: false,
 			comment: 'name',
 		},
@@ -39,7 +42,7 @@ const UserLoginTable = (sequelize, DataTypes) => {
 			comment: 'user email',
 		},
 		password: {
-			type: DataTypes.STRING(20),
+			type: DataTypes.STRING(40),
 			allowNull: false,
 			comment: 'password',
 		},
@@ -150,3 +153,61 @@ sequelize
 		console.log('fail');
 		console.log(err);
 	});
+
+app.post('/api/verify/login', (req, res) => {
+	// 로그인 되었다고 사용자에게 알려줌
+	var reqemail = req.body.email;
+	var reqpassword = req.body.password;
+
+	users.findOne({
+		where : {
+			email : reqemail,
+			password : reqpassword
+		
+		}
+	}).then(function(data)
+	{
+		if( data == null || data == undefined ) {
+			console.log("로그인 이메일이 없습니다. email : "+ reqemail );
+			req.status(412);
+			var data = { success: false, msg: '로그인 정보가 정확하지 않습니다.'};
+
+			res.json(data);
+			
+		}
+		if(data.password != reqpassword ) {
+			console.log("로그인 암호가 틀립니다. email: " + reqemail );
+			req.status(412);
+			var data = {success:false, msg: '로그인 정보가 정확하지 않습니다.'};
+
+			res.json(data);
+
+			}else{
+				console.log("로그인 성공 email: " +reqemail);
+
+				var data = {success:true, msg: ' '};
+			}
+	})
+		
+		
+});
+
+app.post('/api/create/user', (req, res) => {
+	// name, email, password 를 body에 넣어서 실제 디비에 값을 넣을 것
+
+});
+
+app.get('/api/get/user', (req, res) => {
+	//리스트 전체 전송할 것
+
+});
+
+app.get('/api/get/user/:id', (req, res) => {
+	// id와 일치하는 row의 name 값을 전송할 것
+
+});
+
+app.delete('/api/delete/user/:id', (req, res) => {
+	//id 와 일치하는 row를 삭제 할것
+
+});
