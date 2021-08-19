@@ -3,10 +3,7 @@ const bodyParser = require('body-parser');
 const Sequelize = require('sequelize');
 const Op = require('sequelize');
 
-var db_config = require('./db_config.json');
-
-
-const sequelize = new Sequelize('log', 'root', db_config.password, {
+const sequelize = new Sequelize('log', 'root', 'dnjsWLS123!', {
 	host: '127.0.0.1',
 	dialect: 'mysql',
 	logging: false,
@@ -15,7 +12,7 @@ const sequelize = new Sequelize('log', 'root', db_config.password, {
 		collate: 'utf8_general_ci',
 	},
 	pool: {
-		max: 500,
+		max: 5,
 		min: 0,
 		acquire: 30000,
 		idle: 5000,
@@ -46,6 +43,14 @@ const UserLoginTable = (sequelize, DataTypes) => {
 			allowNull: false,
 			comment: 'password',
 		},
+	
+	},
+	{
+		classMethods: {},
+		tablesName: "user",
+		freezeTableName: true,
+		underscored: true,
+		timesettamps: false,
 	});
 };
 
@@ -159,7 +164,7 @@ app.post('/api/verify/login', (req, res) => {
 	var reqemail = req.body.email;
 	var reqpassword = req.body.password;
 
-	users.findOne({
+	user.findOne({
 		where : {
 			email : reqemail,
 			password : reqpassword
