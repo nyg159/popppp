@@ -55,34 +55,8 @@ const UserLoginTable = (sequelize, DataTypes) => {
 };
 
 // UserLogin Table 생성 함수 정의
-const PostLoginTable = (sequelize, DataTypes) => {
-	return sequelize.define('post', {
-		id: {
-			type: DataTypes.INTEGER,
-			autoIncrement: true,
-			primaryKey: true,
-			comment: 'proper id',
-		},
-		name: {
-			type: DataTypes.STRING(40),
-			allowNull: false,
-			comment: 'name',
-		},
-		email: {
-			type: DataTypes.STRING(40),
-			allowNull: false,
-			comment: 'user email',
-		},
-		password: {
-			type: DataTypes.STRING(20),
-			allowNull: false,
-			comment: 'password',
-		},
-	});
-};
 
 const User = UserLoginTable(sequelize, Sequelize.DataTypes);
-const Post = PostLoginTable(sequelize, Sequelize.DataTypes);
 
 const app = express();
 
@@ -164,7 +138,7 @@ app.post('/api/verify/login', (req, res) => {
 	var reqemail = req.body.email;
 	var reqpassword = req.body.password;
 
-	user.findOne({
+	User.findOne({
 		where : {
 			email : reqemail,
 			password : reqpassword
@@ -174,7 +148,7 @@ app.post('/api/verify/login', (req, res) => {
 	{
 		if( data == null || data == undefined ) {
 			console.log("로그인 이메일이 없습니다. email : "+ reqemail );
-			req.status(412);
+			res.status(412) ;
 			var data = { success: false, msg: '로그인 정보가 정확하지 않습니다.'};
 
 			res.json(data);
@@ -182,13 +156,13 @@ app.post('/api/verify/login', (req, res) => {
 		}
 		if(data.password != reqpassword ) {
 			console.log("로그인 암호가 틀립니다. email: " + reqemail );
-			req.status(412);
+			res.status(412);
 			var data = {success:false, msg: '로그인 정보가 정확하지 않습니다.'};
 
 			res.json(data);
 
 			}else{
-				console.log("로그인 성공 email: " +reqemail);
+				console.log("로그인 성공 email: " + reqemail);
 
 				var data = {success:true, msg: ' '};
 			}
