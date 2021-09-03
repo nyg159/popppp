@@ -12,7 +12,7 @@ const sequelize = new Sequelize('log', 'root', 'dnjsWLS123!', {
 		collate: 'utf8_general_ci',
 	},
 	pool: {
-		max: 5,
+		max: 5, 	//db 접속자 최대 숫자
 		min: 0,
 		acquire: 30000,
 		idle: 5000,
@@ -45,6 +45,7 @@ const UserLoginTable = (sequelize, DataTypes) => {
 		},
 	
 	},
+	//sequelize table 설정 및 등등
 	{
 		classMethods: {},
 		tablesName: "user",
@@ -81,6 +82,7 @@ app.post('/post', (req, res) => {
 	console.log('post run');
 });
 
+// db에 사용자 데이터를 넣는다 (회원가입)
 app.post('/users', async (req, res) => {
 	const { email, password, name } = req.body;
 	const user = await User.create({
@@ -88,9 +90,11 @@ app.post('/users', async (req, res) => {
 	});
 	if (user) {
 		// 유저 생성이 완료된 경우
+		console.log('유저가 생성되었습니다.');
 		res.status(201).json(user);
 	} else {
 		// 유저 생성이 실패한 경우
+		console.log('유저 생성에 실패하였습니다.');
 		res.status(400).send('유저 생성에 실패하였습니다.');
 	}
 });
@@ -123,6 +127,7 @@ app.post('/post/body', (req, res) => {
 	console.log(title);
 });
 
+// sequelize sync() :  Sequelize가 초기화 될 때 DB에 필요한 테이블을 생성하는 함수입니다. 이걸 먼저 정의 해야 DB에 있는데이터 조작, 데이터 정의도 가능함
 sequelize
 	.sync({ force: true })
 	.then(() => {
@@ -163,30 +168,50 @@ app.post('/api/verify/login', (req, res) => {
 
 			}else{
 				console.log("로그인 성공 email: " + reqemail);
+				res.status(200).json(data);
 
-				var data = {success:true, msg: ' '};
+				var data = {success:true, msg: ' 로그인 되었습니다. '};
 			}
 	})
 		
 		
 });
 
-app.post('/api/create/user', (req, res) => {
-	// name, email, password 를 body에 넣어서 실제 디비에 값을 넣을 것
+app.get('/api/get/user/:email', (req, res) => {
+	// email와 일치하는 row의 name 값을 전송할 것
 
 });
 
-app.get('/api/get/user', (req, res) => {
-	//리스트 전체 전송할 것
+app.post('/api/delete/user/:email', (req, res) => {
+	//email 과 일치하는 row를 삭제 할것
+	var reqemail = req.body.email;
 
-});
+	User.findOne({
+		where : {
+			email : reqemail,
+		}
 
-app.get('/api/get/user/:id', (req, res) => {
-	// id와 일치하는 row의 name 값을 전송할 것
+	}).then(function(data)
+	{
+		if( data == null || data == undefined ) {
+			console.log("이메일이 존재하지 않습니다. email : "+ reqemail );
+			res.status(412) ;
+			var data = { success: false, msg: '이메일이 존재 하지 않습니다.'};
 
-});
+			res.json(data);
+			
+		}else{
+				console.log("유저 삭제 완료 email: " + reqemail);
+				res.status(200);
 
-app.delete('/api/delete/user/:id', (req, res) => {
-	//id 와 일치하는 row를 삭제 할것
+				User.destroy({where : {email : reqemail }})
+				.then(result => {
+					res.json({});
+				 }).catch(err => {
+					console.error(err);
+				 });
 
+				
+			}
+	})
 });
