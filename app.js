@@ -177,11 +177,6 @@ app.post('/api/verify/login', (req, res) => {
 		
 });
 
-app.get('/api/get/user/:email', (req, res) => {
-	// email와 일치하는 row의 name 값을 전송할 것
-
-});
-
 app.post('/api/delete/user/:email', (req, res) => {
 	//email 과 일치하는 row를 삭제 할것
 	var reqemail = req.body.email;
