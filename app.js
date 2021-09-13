@@ -64,9 +64,6 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.listen(3000, function () {
-	console.log('server running');
-});
 
 app.get('/', (req, res) => {
 	res.send('home');
@@ -209,4 +206,12 @@ app.post('/api/delete/user/:email', (req, res) => {
 				
 			}
 	})
+});
+
+app.use(function(req, res, next) {
+	res.status(404).send('can not found 404');
+});
+
+app.listen(3000, function () {
+	console.log('server running');
 });
