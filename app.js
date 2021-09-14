@@ -1,7 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const Sequelize = require('sequelize');
-const Op = require('sequelize');
+var helmet = require('helmet');
+app.use(helmet());
+
 
 const sequelize = new Sequelize('log', 'root', 'dnjsWLS123!', {
 	host: '127.0.0.1',
@@ -208,8 +210,15 @@ app.post('/api/delete/user/:email', (req, res) => {
 	})
 });
 
+// 찾을 수 없는 홈페이지에 접속 했을 때 호출 되는 404 미들웨어
 app.use(function(req, res, next) {
 	res.status(404).send('can not found 404');
+});
+
+// 에러가 나면 호출되는 에러 미들웨어
+app.use(function(err, req, res, next) {
+	console.error(err.stack)
+	res.status(500).send('Something broken');
 });
 
 app.listen(3000, function () {
