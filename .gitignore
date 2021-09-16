@@ -107,4 +107,5 @@ yarn-error.log
 goorm.manifest
 
 db_config.json
+jwt.js
 .env

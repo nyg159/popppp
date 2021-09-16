@@ -2,7 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const Sequelize = require('sequelize');
 var helmet = require('helmet');
-app.use(helmet());
+app.use(helmet()); // 보안 
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+
+const YOUR_SECRET_KEY = process.env.SECRET_KEY;
 
 
 const sequelize = new Sequelize('log', 'root', 'dnjsWLS123!', {
@@ -167,9 +171,9 @@ app.post('/api/verify/login', (req, res) => {
 
 			}else{
 				console.log("로그인 성공 email: " + reqemail);
+				var data = {success:true, msg: ' 로그인 되었습니다. '};
 				res.status(200).json(data);
 
-				var data = {success:true, msg: ' 로그인 되었습니다. '};
 			}
 	})
 		
