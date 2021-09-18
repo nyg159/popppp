@@ -168,7 +168,8 @@ app.post('/api/verify/login', (req, res) => {
 
 			}else{
 				let token = jwt.sign({
-					email: reqemail 
+					email: reqemail,
+					password: reqpassword 
 				},
 				secretObj.secret,
 				{
