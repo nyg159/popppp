@@ -2,12 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const Sequelize = require('sequelize');
 var helmet = require('helmet');
-app.use(helmet()); // 보안 
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
+var secretObj = require("./jwt");
 
-const YOUR_SECRET_KEY = process.env.SECRET_KEY;
-
+const app = express();
 
 const sequelize = new Sequelize('log', 'root', 'dnjsWLS123!', {
 	host: '127.0.0.1',
@@ -65,9 +63,8 @@ const UserLoginTable = (sequelize, DataTypes) => {
 
 const User = UserLoginTable(sequelize, Sequelize.DataTypes);
 
-const app = express();
-
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(helmet()); //보안
+app.use(bodyParser.urlencoded({ extended: true })); //바디파서 미들웨어 
 app.use(bodyParser.json());
 
 
@@ -170,10 +167,20 @@ app.post('/api/verify/login', (req, res) => {
 			res.json(data);
 
 			}else{
-				console.log("로그인 성공 email: " + reqemail);
-				var data = {success:true, msg: ' 로그인 되었습니다. '};
-				res.status(200).json(data);
-
+				let token = jwt.sign({
+					email: reqemail 
+				},
+				secretObj.secret,
+				{
+					expiresIn: '5m'
+				})
+					res.cookie("User", token);
+					console.log("로그인 성공 email: " + reqemail);
+					var data = {success:true, msg: ' 로그인 되었습니다. '};
+					res.status(200).json({
+						data,
+						token: token
+					}); 
 			}
 	})
 		
